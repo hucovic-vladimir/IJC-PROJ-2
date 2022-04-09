@@ -95,8 +95,10 @@ int main(int argc, char* argv[]){
             }
             if(argv[1][2] != '\0'){
                 fprintf(stderr, "Chyba! Pouziti: ./tail [-n NUMBER] [FILE]\n");
+                exit(1);
             }
             if(argc < 3){
+                fprintf(stderr, "Chyba! Po prepinaci -n musi nasledovat kladne cislo.\n");
                 exit(1);
             }
             argument = strtol(argv[2], &endptr, 10);
@@ -133,7 +135,8 @@ int main(int argc, char* argv[]){
     circularBufferInit(tail, argument);
 
     circularBufferItem* item;
-
+    char garbage[4096];
+    int lineTooLong = 0;
     for(;;){
         item = itemInit();
         if(fgets(item->line, MAX_LINE_LENGTH, f) == NULL){
@@ -142,10 +145,20 @@ int main(int argc, char* argv[]){
             break;
         }
         else{
+            if(item->line[4094] != '\0' && item->line[4094] != '\n'){
+                item->line[4094] = '\n';
+                if(!lineTooLong){
+                    fprintf(stderr, "Varovani: Nektere radky jsou prilis dlouhe, budou useknuty\n");
+                    lineTooLong = 1;
+                }
+                fgets(garbage, MAX_LINE_LENGTH, f);
+            }
             circularBufferAdd(tail, item);
         }
     }
 
-    circularBufferPrint(tail);
-    circularBufferFree(tail);
+    if(tail){
+        circularBufferPrint(tail);
+        circularBufferFree(tail);
+    }
 }
