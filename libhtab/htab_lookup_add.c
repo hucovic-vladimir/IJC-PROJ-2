@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define AVG_LEN_MAX 5.0
+
 htab_pair_t* htab_lookup_add(htab_t* t, htab_key_t key){
     if(!t){
         return NULL;
@@ -41,5 +43,12 @@ htab_pair_t* htab_lookup_add(htab_t* t, htab_key_t key){
         }
         tmp = tmp->next;
     }
+
+
+    double avgListLen = t->size / t->arr_size;
+    if(avgListLen > AVG_LEN_MAX){
+        htab_resize(t, t->arr_size*2);
+    }
+    
     return NULL;
 }

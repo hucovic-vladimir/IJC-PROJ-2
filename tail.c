@@ -1,9 +1,21 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "tail.h"
 
 #define MAX_LINE_LENGTH 4096
+
+typedef struct circularBufferItem{
+    struct circularBufferItem* next;
+    char* line;
+} circularBufferItem;
+
+typedef struct{
+    unsigned long maxSize;
+    unsigned long currSize;
+    circularBufferItem *head;
+    circularBufferItem *tail;
+} circularBuffer;
+
 
 int circularBufferInit(circularBuffer *buf, unsigned long maxSize){
     if(buf){
@@ -135,7 +147,6 @@ int main(int argc, char* argv[]){
     circularBufferInit(tail, argument);
 
     circularBufferItem* item;
-    char garbage[4096];
     int lineTooLong = 0;
     for(;;){
         item = itemInit();
@@ -151,7 +162,13 @@ int main(int argc, char* argv[]){
                     fprintf(stderr, "Varovani: Nektere radky jsou prilis dlouhe, budou useknuty\n");
                     lineTooLong = 1;
                 }
-                fgets(garbage, MAX_LINE_LENGTH, f);
+                char cutaway;
+                while((cutaway = getc(f))){
+                    if(cutaway == '\n'){
+                        break;
+                    }
+                }
+
             }
             circularBufferAdd(tail, item);
         }

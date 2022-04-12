@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#define AVG_LEN_MIN 1
+
 bool htab_erase(htab_t * t, htab_key_t key){
     htab_item* tmp;
     htab_item* tmp2;
