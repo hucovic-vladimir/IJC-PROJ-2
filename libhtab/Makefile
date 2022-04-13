@@ -3,12 +3,26 @@ CCFLAGS = -std=c11 -pedantic -Wall -Wextra -g
 LDFLAGS = -fsanitize=address
 
 
+all: main wordcount wordcount-dynamic
 
 main: main.o libhtab.a
 	$(CC) $^ -o main $(LDFLAGS)
 
 main.o: main.c
 	$(CC) $(CCFLAGS) $^ -c
+
+wordcount: wordcount.o io.o libhtab.a
+	$(CC) $(CCFLAGS) wordcount.o io.o -o $@ -fPIC -L. -lhtab -static
+
+wordcount-dynamic: wordcount.o io.o libhtab.so
+	$(CC) $(CCFLAGS) wordcount.o io.o -o $@ $(LDFLAGS) -fPIC -L. -lhtab
+
+wordcount.o: wordcount.c
+	$(CC) $(CCFLAGS) $^ -c
+
+io.o: io.c
+	$(CC) $(CCFLAGS) $^ -c
+
 
 run: main
 	./main
@@ -17,8 +31,12 @@ libhtab.a: htab_bucket_count.o htab_clear.o htab_erase.o htab_find.o \
            htab_for_each.o htab_free.o htab_hash_function.o htab_init.o htab_lookup_add.o htab_resize.o htab_size.o
 	ar rcs $@ $^
 
+libhtab.so: htab_bucket_count.o htab_clear.o htab_erase.o htab_find.o \
+            htab_for_each.o htab_free.o htab_hash_function.o htab_init.o htab_lookup_add.o htab_resize.o htab_size.o
+	gcc -shared -fPIC $^ -o $@
+
 clean:
-	rm main *.o
+	rm main wordcount *.o
 
 
 htab_bucket_count.o: htab_bucket_count.c htab_structs_definition.h htab.h

@@ -10,22 +10,24 @@ htab_pair_t* htab_lookup_add(htab_t* t, htab_key_t key){
         return NULL;
     }
 
+    char* keyCopy = calloc(strlen(key), sizeof(char));
+
     htab_item* tmp;
-    for(unsigned long i = 0; i < t->arr_size; ++i){
-        tmp = t->arr_ptr[i];
-        while(tmp){
-            if(!strcmp(tmp->pair.key, key)){
-                return &(tmp->pair);
-            }
-            tmp = tmp->next;
+    tmp = t->arr_ptr[htab_hash_function(key) % t->arr_size];
+    while(tmp){
+        if(!strcmp(tmp->pair.key, key)){
+            return &(tmp->pair);
         }
+        tmp = tmp->next;
     }
+
     htab_item* newItem = calloc(1, sizeof(htab_item));
     if(!newItem){
         return NULL;
     }
+    strcpy(keyCopy, key);
     newItem->next = NULL;
-    newItem->pair.key = key;
+    newItem->pair.key = keyCopy;
     newItem->pair.value = 0;
 
     size_t index = htab_hash_function(key) % t->arr_size;
