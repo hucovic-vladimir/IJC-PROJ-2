@@ -14,11 +14,13 @@ bool htab_erase(htab_t * t, htab_key_t key){
         if (!strcmp(tmp->pair.key, key)) {
             if(tmp->next){
                 tmp2 = t->arr_ptr[index]->next;
+                free((char*) t->arr_ptr[index]->pair.key);
                 free(t->arr_ptr[index]);
                 t->size--;
                 t->arr_ptr[index] = tmp2;
                 return true;
             }
+            free((char*) t->arr_ptr[index]->pair.key);
             free(t->arr_ptr[index]);
             t->size--;
             t->arr_ptr[index] = NULL;
@@ -31,11 +33,13 @@ bool htab_erase(htab_t * t, htab_key_t key){
         if(!strcmp(tmp->pair.key, key)){
             if(tmp->next){
                 tmp2->next = tmp->next;
+                free((char*) tmp->pair.key);
                 free(tmp);
                 t->size--;
                 tmp = NULL;
                 return true;
             }
+            free((char*) tmp->pair.key);
             free(tmp);
             t->size--;
             tmp2->next = NULL;

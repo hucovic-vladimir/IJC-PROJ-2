@@ -14,6 +14,7 @@ void htab_free(htab_t * t){
         while(tmp){
             tmp2 = tmp;
             tmp = tmp->next;
+            free((char*) tmp2->pair.key);
             free(tmp2);
         }
     }

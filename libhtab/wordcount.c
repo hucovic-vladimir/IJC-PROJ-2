@@ -12,15 +12,17 @@ void printPairContent(htab_pair_t *p){
 }
 
 int main(){
-    htab_t *t = htab_init(5);
+    htab_t *t = htab_init(13);
     int len;
-    char s[128];
+    char s[128] = {0};
 
     htab_pair_t* pair;
+    int wordTooLong = 0;
     while((len = read_word(s, MAX_WORD_LEN+1, stdin)) != EOF){
         if(len > 0){
-            if(len > MAX_WORD_LEN){
+            if(len > MAX_WORD_LEN && wordTooLong == 0){
                 fprintf(stderr, "Nektera slova jsou prilis dlouha! Slova delsi nez %d budou zkracena!\n", MAX_WORD_LEN);
+                wordTooLong++;
             }
             pair = htab_lookup_add(t, s);
             pair->value++;
@@ -28,6 +30,5 @@ int main(){
     }
 
     htab_for_each(t, printPairContent);
-
     htab_free(t);
 }

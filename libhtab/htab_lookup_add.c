@@ -10,8 +10,6 @@ htab_pair_t* htab_lookup_add(htab_t* t, htab_key_t key){
         return NULL;
     }
 
-    char* keyCopy = calloc(strlen(key), sizeof(char));
-
     htab_item* tmp;
     tmp = t->arr_ptr[htab_hash_function(key) % t->arr_size];
     while(tmp){
@@ -21,6 +19,12 @@ htab_pair_t* htab_lookup_add(htab_t* t, htab_key_t key){
         tmp = tmp->next;
     }
 
+    double avgListLen = t->size / t->arr_size;
+    if(avgListLen > AVG_LEN_MAX){
+        htab_resize(t, t->arr_size*2);
+    }
+
+    char* keyCopy = calloc(strlen(key)+1, sizeof(char));
     htab_item* newItem = calloc(1, sizeof(htab_item));
     if(!newItem){
         return NULL;
@@ -29,6 +33,7 @@ htab_pair_t* htab_lookup_add(htab_t* t, htab_key_t key){
     newItem->next = NULL;
     newItem->pair.key = keyCopy;
     newItem->pair.value = 0;
+
 
     size_t index = htab_hash_function(key) % t->arr_size;
     tmp = t->arr_ptr[index];
@@ -44,12 +49,6 @@ htab_pair_t* htab_lookup_add(htab_t* t, htab_key_t key){
             return &(newItem->pair);
         }
         tmp = tmp->next;
-    }
-
-
-    double avgListLen = t->size / t->arr_size;
-    if(avgListLen > AVG_LEN_MAX){
-        htab_resize(t, t->arr_size*2);
     }
     
     return NULL;
