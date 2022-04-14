@@ -30,7 +30,8 @@ void htab_resize(htab_t* t, size_t newn){
         while(tmp){
             newPair = htab_lookup_add(newTab, tmp->pair.key);
             if(!newPair){
-                return; //TODO probably exit here?
+                htab_free(newTab);
+                return;
             }
             newPair->value = tmp->pair.value;
             tmp = tmp->next;
