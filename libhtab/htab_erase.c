@@ -1,11 +1,19 @@
+/**
+ * @file htab_erase.c
+ * @name IJC - Domácí úkol 2, příklad b), 14.4.2022
+ * @author Vladimír Hucovič, FIT
+ * Přeloženo pomocí GCC verze 11.2.0
+ */
+
 #include "htab.h"
 #include "htab_structs_definition.h"
 #include <string.h>
 #include <stdlib.h>
 
-#define AVG_LEN_MIN 1
+#define AVG_LEN_MIN 0.005
 
 bool htab_erase(htab_t * t, htab_key_t key){
+    bool returnValue = false;
     htab_item* tmp;
     htab_item* tmp2;
     size_t index = htab_hash_function(key) % t->arr_size;
@@ -18,13 +26,13 @@ bool htab_erase(htab_t * t, htab_key_t key){
                 free(t->arr_ptr[index]);
                 t->size--;
                 t->arr_ptr[index] = tmp2;
-                return true;
+                returnValue = true;
             }
             free((char*) t->arr_ptr[index]->pair.key);
             free(t->arr_ptr[index]);
             t->size--;
             t->arr_ptr[index] = NULL;
-            return true;
+            returnValue = true;
         }
     }
 
@@ -37,18 +45,24 @@ bool htab_erase(htab_t * t, htab_key_t key){
                 free(tmp);
                 t->size--;
                 tmp = NULL;
-                return true;
+                returnValue = true;
             }
             free((char*) tmp->pair.key);
             free(tmp);
             t->size--;
             tmp2->next = NULL;
             tmp = NULL;
-            return true;
+            returnValue = true;
         }
         tmp2 = tmp;
         tmp = tmp->next;
     }
 
-    return false;
+    if(returnValue){
+        double avgBucketLen = t->size / t->arr_size;
+        if(avgBucketLen < AVG_LEN_MIN){
+            htab_resize(t, t->arr_size/2);
+        }
+    }
+    return returnValue;
 }    // ruší zadaný záznam

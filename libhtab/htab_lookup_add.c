@@ -1,9 +1,16 @@
+/**
+ * @file htab_lookup_add.c
+ * @name IJC - Domácí úkol 2, příklad b), 14.4.2022
+ * @author Vladimír Hucovič, FIT
+ * Přeloženo pomocí GCC verze 11.2.0
+ */
+
 #include "htab.h"
 #include "htab_structs_definition.h"
 #include <string.h>
 #include <stdlib.h>
 
-#define AVG_LEN_MAX 5.0
+#define AVG_LEN_MAX 0.75
 
 htab_pair_t* htab_lookup_add(htab_t* t, htab_key_t key){
     if(!t){
@@ -19,8 +26,8 @@ htab_pair_t* htab_lookup_add(htab_t* t, htab_key_t key){
         tmp = tmp->next;
     }
 
-    double avgListLen = t->size / t->arr_size;
-    if(avgListLen > AVG_LEN_MAX){
+    double avgBucketLen = t->size / t->arr_size;
+    if(avgBucketLen > AVG_LEN_MAX){
         htab_resize(t, t->arr_size*2);
     }
 
