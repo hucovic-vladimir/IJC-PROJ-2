@@ -87,9 +87,21 @@ void circularBufferFree(circularBuffer* buf){
     free(buf);
 }
 
+void handleMemoryErrors(){
+    fprintf(stderr, "Error: failed to allocate memory. Exiting.\n");
+    exit(1);
+}
+
+
 circularBufferItem* itemInit(){
     circularBufferItem* item = calloc(1, sizeof(circularBufferItem));
+    if(!item){
+        handleMemoryErrors();
+    }
     item->line = calloc(MAX_LINE_LENGTH, sizeof(char));
+    if(!item->line){
+        handleMemoryErrors();
+    }
     item->next = NULL;
     return item;
 }
@@ -144,6 +156,9 @@ int main(int argc, char* argv[]){
     }
 
     circularBuffer* tail = calloc(1, sizeof(circularBuffer));
+    if(!tail){
+        handleMemoryErrors();
+    }
     circularBufferInit(tail, argument);
 
     circularBufferItem* item;
