@@ -10,7 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define AVG_LEN_MIN 0.005
+#define AVG_LEN_MIN 0.5
 
 bool htab_erase(htab_t * t, htab_key_t key){
     bool returnValue = false;
@@ -28,36 +28,41 @@ bool htab_erase(htab_t * t, htab_key_t key){
                 t->arr_ptr[index] = tmp2;
                 returnValue = true;
             }
-            free((char*) t->arr_ptr[index]->pair.key);
-            free(t->arr_ptr[index]);
-            t->size--;
-            t->arr_ptr[index] = NULL;
-            returnValue = true;
-        }
-    }
-
-    tmp2 = t->arr_ptr[index];
-    while(tmp){
-        if(!strcmp(tmp->pair.key, key)){
-            if(tmp->next){
-                tmp2->next = tmp->next;
-                free((char*) tmp->pair.key);
-                free(tmp);
+            if(!returnValue){
+                free((char*) t->arr_ptr[index]->pair.key);
+                free(t->arr_ptr[index]);
                 t->size--;
-                tmp = NULL;
+                t->arr_ptr[index] = NULL;
                 returnValue = true;
             }
-            free((char*) tmp->pair.key);
-            free(tmp);
-            t->size--;
-            tmp2->next = NULL;
-            tmp = NULL;
-            returnValue = true;
         }
-        tmp2 = tmp;
-        tmp = tmp->next;
     }
 
+    if(!returnValue) {
+        tmp2 = t->arr_ptr[index];
+        while (tmp) {
+            if (!strcmp(tmp->pair.key, key)) {
+                if (tmp->next) {
+                    tmp2->next = tmp->next;
+                    free((char *) tmp->pair.key);
+                    free(tmp);
+                    t->size--;
+                    tmp = NULL;
+                    returnValue = true;
+                    break;
+                }
+                free((char *) tmp->pair.key);
+                free(tmp);
+                t->size--;
+                tmp2->next = NULL;
+                tmp = NULL;
+                returnValue = true;
+                break;
+            }
+            tmp2 = tmp;
+            tmp = tmp->next;
+        }
+    }
     if(returnValue){
         double avgBucketLen = t->size / t->arr_size;
         if(avgBucketLen < AVG_LEN_MIN){

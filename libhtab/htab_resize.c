@@ -18,29 +18,48 @@ void htab_resize(htab_t* t, size_t newn){
         return;
     }
 
-    htab_t* newTab = htab_init(newn);
-    if(!newTab){
-        return;
-    }
+    htab_item** newArray = calloc(newn, sizeof(htab_item*));
 
-    htab_pair_t* newPair;
     htab_item* tmp;
+    htab_item* tmp2;
+    int newIndex;
+    int broken = 0;
+
     for (size_t i = 0; i < t->arr_size; ++i) {
         tmp = t->arr_ptr[i];
         while(tmp){
-            newPair = htab_lookup_add(newTab, tmp->pair.key);
-            if(!newPair){
-                htab_free(newTab);
-                return;
+            broken = 0;
+            newIndex = htab_hash_function(tmp->pair.key) % newn;
+            tmp2 = newArray[newIndex];
+            if(tmp2 == NULL){
+                newArray[newIndex] = tmp;
+                if(tmp->next){
+                    tmp = tmp->next;
+                    newArray[newIndex]->next = NULL;
+                    continue;
+                }
             }
-            newPair->value = tmp->pair.value;
-            tmp = tmp->next;
+            else{
+                while(tmp2){
+                    if(!tmp2->next){
+                        tmp2->next = tmp;
+                        if(tmp->next){
+                            tmp = tmp->next;
+                            tmp2->next->next = NULL;
+                            broken = 1;
+                            break;
+                        }
+                         break;
+                    }
+                    tmp2 = tmp2->next;
+                }
+            }
+            if(!broken){
+                tmp = tmp->next;
+            }
         }
     }
-    htab_clear(t);
     free(t->arr_ptr);
-    t->arr_size = newTab->arr_size;
-    t->size = newTab->size;
-    t->arr_ptr = newTab->arr_ptr;
-    free(newTab);
+    t->arr_size = newn;
+    t->arr_ptr = newArray;
 }
