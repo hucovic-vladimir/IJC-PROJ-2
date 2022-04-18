@@ -134,11 +134,16 @@ int main(int argc, char* argv[]){
                 exit(1);
             }
             argument = strtol(argv[2], &endptr, 10);
+            if(argument < 0){
+                argument = -argument;
+            }
+
             if(argument == 0){
                 if(strcmp(endptr, "")){
                     fprintf(stderr, "Spatna hodnota po prepinaci -n! Musi to byt kladne cislo.\n");
+                    exit(1);
                 }
-                exit(1);
+                exit(0);
             }
             if(strcmp(endptr, "")){
                 fprintf(stderr, "Spatna hodnota po prepinaci -n! Musi to byt kladne cislo.\n");
