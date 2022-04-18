@@ -7,12 +7,6 @@ all: wordcount wordcount-dynamic tail
 
 .PHONY: clean
 
-#main: main.o libhtab.a
-#	$(CC) $^ -o main $(LDFLAGS)
-#
-#main.o: main.c
-#	$(CC) $(CCFLAGS) $^ -c
-
 wordcount: wordcount.o io.o libhtab.a
 	$(CC) $(CCFLAGS) wordcount.o io.o -o $@ -fPIC -L. -lhtab -static
 
@@ -75,3 +69,5 @@ tail: tail.o
 
 tail.o: tail.c
 	$(CC) $(CCFLAGS) tail.c -c
+
+xhucov00.zip:

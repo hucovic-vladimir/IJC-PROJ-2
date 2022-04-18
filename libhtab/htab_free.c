@@ -14,6 +14,8 @@ void htab_free(htab_t * t){
         return;
     }
 
+    // tmp, tmp2 - iteratory tabulky.
+    // tmp je pouzito pro uchovani zaznamu (.next) za prave uvolnenym zaznamem
     htab_item* tmp;
     htab_item* tmp2;
     for(unsigned long i = 0; i < t->arr_size; ++i){

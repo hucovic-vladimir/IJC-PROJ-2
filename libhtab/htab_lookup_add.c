@@ -17,7 +17,10 @@ htab_pair_t* htab_lookup_add(htab_t* t, htab_key_t key){
         return NULL;
     }
 
+    // tmp - iterator prvku tabulky
     htab_item* tmp;
+
+    // projde bucket a zjisti, jestli se tam zaznam s danym klicem jiz nenachazi
     tmp = t->arr_ptr[htab_hash_function(key) % t->arr_size];
     while(tmp){
         if(!strcmp(tmp->pair.key, key)){
@@ -26,22 +29,31 @@ htab_pair_t* htab_lookup_add(htab_t* t, htab_key_t key){
         tmp = tmp->next;
     }
 
-    double avgBucketLen = t->size / t->arr_size;
-    if(avgBucketLen > AVG_LEN_MAX){
-        htab_resize(t, t->arr_size*2);
+    // je vytvorena kopie klice, aby bylo mozne pouzit i char ze stacku
+    char* keyCopy = calloc(strlen(key)+1, sizeof(char));
+    if(!keyCopy){
+        return NULL;
     }
 
-    char* keyCopy = calloc(strlen(key)+1, sizeof(char));
+    // vytvori novy item, zjisti hash, ulozi ukazatel do tabulky
     htab_item* newItem = calloc(1, sizeof(htab_item));
     if(!newItem){
         return NULL;
     }
+
+    // pokud by pridani dalsiho itemu zpusobilo zvyseni prumerne delky bucketu nad definovane maximum, provede se resize
+    double avgBucketLen = (t->size+1) / t->arr_size;
+    if(avgBucketLen > AVG_LEN_MAX){
+        htab_resize(t, t->arr_size*2);
+    }
+
     strcpy(keyCopy, key);
     newItem->next = NULL;
     newItem->pair.key = keyCopy;
     newItem->pair.value = 0;
 
 
+    // samotne pridani do tabulky
     size_t index = htab_hash_function(key) % t->arr_size;
     tmp = t->arr_ptr[index];
     if(!tmp){
@@ -57,6 +69,5 @@ htab_pair_t* htab_lookup_add(htab_t* t, htab_key_t key){
         }
         tmp = tmp->next;
     }
-    
     return NULL;
 }

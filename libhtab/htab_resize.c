@@ -19,12 +19,19 @@ void htab_resize(htab_t* t, size_t newn){
     }
 
     htab_item** newArray = calloc(newn, sizeof(htab_item*));
+    if(!newArray){
+        return;
+    }
 
+    // tmp - iterator puvodniho pole
+    // tmp2 - iterator noveho pole
     htab_item* tmp;
     htab_item* tmp2;
+
     int newIndex;
     int broken = 0;
 
+    // projde starou tabulku, rehashuje zaznamy a premisti ukazatele do noveho pole
     for (size_t i = 0; i < t->arr_size; ++i) {
         tmp = t->arr_ptr[i];
         while(tmp){

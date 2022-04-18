@@ -8,6 +8,7 @@
 #include <ctype.h>
 #include <stdio.h>
 
+// cte 1 slovo do stringu s a vraci jeho delku. slovo se usekne po presahnuti limitu max, ale pocitani delky pokracuje az do bileho znaku.
 int read_word(char *s, int max, FILE *f){
     for (int i = 0; i < max; ++i) {
         s[i] = '\0';

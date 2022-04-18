@@ -12,6 +12,8 @@ htab_pair_t * htab_find(htab_t * t, htab_key_t key) {
     if (!t) {
         return NULL;
     }
+
+    // tmp - iterator tabulky
     htab_item *tmp;
     tmp = t->arr_ptr[htab_hash_function(key) % t->arr_size];
     while (tmp) {

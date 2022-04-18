@@ -10,7 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define AVG_LEN_MIN 0.5
+#define AVG_LEN_MIN 0.01
 
 bool htab_erase(htab_t * t, htab_key_t key){
     bool returnValue = false;
